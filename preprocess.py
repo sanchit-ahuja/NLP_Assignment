@@ -85,7 +85,7 @@ class Data(Dataset):
 
 
 def get_dataset(batch_size=2,types="train",shuffle=True,num_workers=1,pin_memory=False,drop_last=True):
-    lines = pd.read_csv('Hindi_English_Truncated_Corpus.csv', encoding='utf-8')
+    lines = pd.read_csv('/home/manthan/nnfl_ass2/NLP_Assignment/.gitignore/Hindi_English_Truncated_Corpus.csv', encoding='utf-8')
     lines = lines[lines['source'] == 'ted']  # Remove other sources
     # print(lines.head(20))
     lines.drop_duplicates(inplace=True)
