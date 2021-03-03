@@ -84,7 +84,7 @@ class Data(Dataset):
     
 
 
-if __name__ == '__main__':
+def get_dataset(batch_size=2,types="train",shuffle=True,num_workers=1,pin_memory=False,drop_last=True):
     lines = pd.read_csv('Hindi_English_Truncated_Corpus.csv', encoding='utf-8')
     lines = lines[lines['source'] == 'ted']  # Remove other sources
     # print(lines.head(20))
@@ -111,7 +111,15 @@ if __name__ == '__main__':
     # print(target_tensor[:10][2])
     input_tensor_train, input_tensor_val, target_tensor_train, target_tensor_val = train_test_split(input_tensor, target_tensor, test_size=0.2, random_state = 42)
     # print(len(input_tensor_train))
-    train_dataset = Data(input_tensor_train, target_tensor_train)
-    val_dataset = Data(input_tensor_val, target_tensor_val)
-    dataset = DataLoader(train_dataset, batch_size = 64, shuffle = True)
-    print(next(iter(dataset)))
+    if types=="train":
+        train_dataset = Data(input_tensor_train, target_tensor_train)
+        return DataLoader(train_dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers,pin_memory=pin_memory,drop_last=drop_last),english_words,hindi_words
+    elif types=="val":
+        val_dataset = Data(input_tensor_val, target_tensor_val)
+        return DataLoader(val_dataset,batch_size,shuffle,num_workers,pin_memory,drop_last),english_words,hindi_words
+    else:
+        raise ValueError("types must be in ['train','val']")
+    # print(next(iter(dataset)))
+# tensor=(next(iter(get_dataset(2))))
+# print(tensor)
+# print(len(tensor),tensor[0].shape,tensor[1].shape)
