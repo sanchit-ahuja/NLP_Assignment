@@ -76,7 +76,12 @@ encoder1 = EncoderRNN(args.hidden_size_encoder,len(source_vocab)+2, args.batch_s
 bridge = Linear(args.bidirectional, args.hidden_size_encoder, args.hidden_size_decoder).to(device)
 decoder1 = DecoderRNN(args.hidden_size_decoder,len(target_vocab)+2, args.batch_size, num_layers=args.num_layer_decoder).to(device)
 
-trainIters(trainset,encoder1, decoder1, bridge,num_epochs=args.num_epochs,batch_size=args.batch_size,print_every=10,device=device)
+trainIters(trainset,encoder1, decoder1, bridge,num_epochs=10,batch_size=args.batch_size,print_every=10,device=device)
+torch.save(encoder1,"encoder.pt")
+torch.save(decoder1,"decoder.pt")
+torch.save(bridge,"bridge.pt")
+
+
 
 ######################################################################
 # evaluateRandomly(encoder1, decoder1, bridge)

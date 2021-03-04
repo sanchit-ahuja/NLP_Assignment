@@ -5,7 +5,12 @@
 # In evaluation, we simply feed the sequence and observe the output.
 # The generation will be over once the "EOS" has been generated.
 import torch
-def evaluate(encoder, decoder, bridge, input_tensor, max_length=args.MAX_LENGTH):
+from utils.transformer import *
+SOS_TOKEN = 1
+EOS_TOKEN = 2
+PAD_TOKEN = 0
+def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_length=20,bidirectional=False):
+
 
     # Required for tensor matching.
     # Remove to see the results for educational purposes.
@@ -13,9 +18,9 @@ def evaluate(encoder, decoder, bridge, input_tensor, max_length=args.MAX_LENGTH)
 
         # Initialize the encoder hidden.
         input_length = input_tensor.size(0)
-        encoder_hidden = encoder.initHidden()
+        encoder_hidden = encoder.initHidden(device)
 
-        if args.bidirectional:
+        if bidirectional:
             encoder_outputs = torch.zeros(args.batch_size, max_length, 2 * encoder.hidden_size, device=device)
             encoder_hidden_forward = encoder_hidden['forward']
             encoder_hidden_backward = encoder_hidden['backward']
@@ -67,7 +72,7 @@ def evaluate(encoder, decoder, bridge, input_tensor, max_length=args.MAX_LENGTH)
                 decoded_words.append('<EOS>')
                 break
             else:
-                decoded_words.append(output_lang.index2word[topi.item()])
+                decoded_words.append(index2word_hin[topi.item()])
 
             decoder_input = topi.squeeze().detach()
 
@@ -76,22 +81,41 @@ def evaluate(encoder, decoder, bridge, input_tensor, max_length=args.MAX_LENGTH)
 
 
 ######################################################################
-def evaluateRandomly(encoder, decoder, bridge, n=10):
-    for i in range(n):
-        pair = testset[i]['sentence']
-        input_tensor, mask_input = reformat_tensor_mask(pair[:,0,:].view(1,1,-1))
+def evaluateRandomly(encoder, decoder, bridge,device,testset,idx2word_en,idx2word_hin, n=10):
+    j=0
+    for i,data in enumerate(testset,1):
+        j=j+1
+        pair = data
+        input_tensor, mask_input = reformat_tensor_mask(pair[0].view(1,1,-1))
+        print(input_tensor.shape)
         input_tensor = input_tensor[input_tensor != 0]
-        output_tensor, mask_output = reformat_tensor_mask(pair[:,1,:].view(1,1,-1))
+        output_tensor, mask_output = reformat_tensor_mask(pair[1].view(1,1,-1))
         output_tensor = output_tensor[output_tensor != 0]
         if device == torch.device("cuda"):
             input_tensor = input_tensor.cuda()
             output_tensor = output_tensor.cuda()
 
-        input_sentence = ' '.join(SentenceFromTensor_(input_lang, input_tensor))
-        output_sentence = ' '.join(SentenceFromTensor_(output_lang, output_tensor))
+        input_sentence = ' '.join(SentenceFromTensor_(idx2word_en, input_tensor))
+        output_sentence = ' '.join(SentenceFromTensor_(idx2word_hin, output_tensor))
         print('Input: ', input_sentence)
         print('Output: ', output_sentence)
-        output_words = evaluate(encoder, decoder, bridge, input_tensor)
+        input_tensor=input_tensor.to(device)
+        output_words = evaluate(encoder, decoder, bridge, input_tensor,device,idx2word_hin)
         output_sentence = ' '.join(output_words)
         print('Predicted Output: ', output_sentence)
         print('')
+        if(j==n):
+          break
+
+from preprocess import get_dataset
+device = torch.device("cpu")
+testset,idx2word_en,idx2word_hin = get_dataset(batch_size=1,types="val",shuffle=False,num_workers=1,pin_memory=False,drop_last=False)
+encoder=torch.load("encoder.pt")
+encoder=encoder.to(device)
+
+decoder=torch.load("decoder.pt")
+decoder=decoder.to(device)
+bridge=torch.load("bridge.pt")
+bridge=bridge.to(device)
+evaluateRandomly(encoder,decoder,bridge,device,testset,idx2word_en,idx2word_hin)
+  

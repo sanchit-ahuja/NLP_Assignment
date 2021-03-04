@@ -85,7 +85,7 @@ class Data(Dataset):
 
 
 def get_dataset(batch_size=2,types="train",shuffle=True,num_workers=1,pin_memory=False,drop_last=True):
-    lines = pd.read_csv('/home/manthan/nnfl_ass2/NLP_Assignment/.gitignore/Hindi_English_Truncated_Corpus.csv', encoding='utf-8')
+    lines = pd.read_csv('Hindi_English_Truncated_Corpus.csv', encoding='utf-8')
     lines = lines[lines['source'] == 'ted']  # Remove other sources
     # print(lines.head(20))
     lines.drop_duplicates(inplace=True)
@@ -104,6 +104,8 @@ def get_dataset(batch_size=2,types="train",shuffle=True,num_workers=1,pin_memory
     hindi_words = get_vocab(lines['hindi_sentence'])
     word2idx_eng = token_idx(english_words)
     word2idx_hin = token_idx(hindi_words)
+    idx2word_eng=idx_token(word2idx_eng)
+    idx2word_hin=idx_token(word2idx_hin)
     input_tensor = [[word2idx_eng[s] for s in eng.split()] for eng in lines['english_sentence'].values.tolist()]
     target_tensor = [[word2idx_hin[s] for s in hin.split()] for hin in lines['hindi_sentence'].values.tolist()]
     input_tensor = [pad_sequences(x) for x in input_tensor]
@@ -116,7 +118,7 @@ def get_dataset(batch_size=2,types="train",shuffle=True,num_workers=1,pin_memory
         return DataLoader(train_dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers,pin_memory=pin_memory,drop_last=drop_last),english_words,hindi_words
     elif types=="val":
         val_dataset = Data(input_tensor_val, target_tensor_val)
-        return DataLoader(val_dataset,batch_size,shuffle,num_workers,pin_memory,drop_last),english_words,hindi_words
+        return DataLoader(val_dataset,batch_size,shuffle=shuffle,num_workers=num_workers,pin_memory=pin_memory,drop_last=drop_last),idx2word_eng,idx2word_hin
     else:
         raise ValueError("types must be in ['train','val']")
     # print(next(iter(dataset)))

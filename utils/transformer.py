@@ -19,10 +19,10 @@ EOS_token = 2
 
 
 
-def SentenceFromTensor_(lang, tensor):
+def SentenceFromTensor_(index2word, tensor):
     indexes = tensor.squeeze()
     indexes = indexes.tolist()
-    return [lang.index2word[index] for index in indexes]
+    return [index2word[index] for index in indexes]
 
 
 # Preparing Training Data
