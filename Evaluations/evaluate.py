@@ -43,8 +43,13 @@ def test_index_token():
 def test_convert_to_tensor():
     from preprocess import convert_to_tensor
     sent = pd.read_pickle('pd_lines_eng.pkl')
-    tens = convert_to_tensor(WORD_IDX_DICT_TEST_CASES,sent)
-    print(tens)
+    word_idx = load_dict('all_words_token_idx.pkl')
+    tens = convert_to_tensor(word_idx,sent)
+    tens_correct = load_dict('tensor_val_correct.pkl')
+    for arr, arr1 in zip(tens, tens_correct):
+        assert arr.all() == arr1.all()
+
+
 if __name__ == "__main__":
     from preprocess import convert_to_tensor
     test_convert_to_tensor()
