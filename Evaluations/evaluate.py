@@ -1,11 +1,12 @@
+import os
+import pickle
+import sys
 from collections import OrderedDict
 from typing import Dict
-import os
-import sys
-import pickle
-import pandas as pd
 
+import pandas as pd
 from numpy.lib.npyio import save
+
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
@@ -26,7 +27,6 @@ def load_dict(filename):
 def save_dict(di_, filename_):
     with open(filename_, 'wb') as f:
         pickle.dump(di_, f)
-# def test_token_idx(test_dict: Dict, correct_dict: Dict):
 
 def test_token_index():
     from preprocess import token_idx
@@ -49,11 +49,26 @@ def test_convert_to_tensor():
     for arr, arr1 in zip(tens, tens_correct):
         assert arr.all() == arr1.all()
 
+def test_dataset_object():
+    from preprocess import Data
+    input_tensor_train = load_dict('input_tensor_train.pkl')
+    target_tensor_train = load_dict('target_tensor_train.pkl')
+    dataset = Data(input_tensor_train, target_tensor_train)
+    item_10_correct = load_dict('item_10.pkl')
+    item_21_correct = load_dict('item_21.pkl')
+    item_45_correct = load_dict('item_45.pkl')
+    item_100_correct = load_dict('item_100.pkl')
+
+    assert (dataset.__getitem__(10)[0] == item_10_correct[0]).all()
+    assert (dataset.__getitem__(21)[0] == item_21_correct[0]).all()
+    assert (dataset.__getitem__(45)[0] == item_45_correct[0]).all()
+    assert (dataset.__getitem__(100)[0] == item_100_correct[0]).all()
+
+    assert (dataset.__getitem__(10)[1] == item_10_correct[1]).all()
+    assert (dataset.__getitem__(21)[1] == item_21_correct[1]).all()
+    assert (dataset.__getitem__(45)[1] == item_45_correct[1]).all()
+    assert (dataset.__getitem__(100)[1] == item_100_correct[1]).all()
+
 
 if __name__ == "__main__":
-    from preprocess import convert_to_tensor
-    test_convert_to_tensor()
-    # from preprocess import idx_token
-    # test_dic_word_idx = idx_token(WORD_IDX_DICT_TEST_CASES)
-    # actual_dic_word_idx = load_dict('idx_word_token.pkl')
-    # testing_dict(test_dic_word_idx,actual_dic_word_idx)
+    test_dataset_object()
