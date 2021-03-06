@@ -46,7 +46,7 @@ def get_vocab(lang: pd.Series) -> List:
 
 
 def token_idx(words: List) -> Dict:
-    word2idx = {'SOS': 1, 'EOS': 2, 'PAD':0}
+    word2idx = {'SOS': 1, 'EOS': 2, 'PAD': 0}
     counter = 3
     for word in words:
         if word not in word2idx:
@@ -56,35 +56,45 @@ def token_idx(words: List) -> Dict:
 
 
 def idx_token(wor2idx: Dict) -> Dict:
-    idx2word = {1: 'SOS', 2: 'EOS', 'PAD':0}
+    idx2word = {1: 'SOS', 2: 'EOS', 'PAD': 0}
     for word, idx in wor2idx.items():
         if idx not in idx2word:
             idx2word[idx] = word
-    
+
     return idx2word
 
-def pad_sequences(x, max_len = 20):
+
+def pad_sequences(x, max_len=20):
     padded = np.zeros((max_len), dtype=np.int64)
-    if len(x) > max_len: padded[:] = x[:max_len]
-    else: padded[:len(x)] = x
+    if len(x) > max_len:
+        padded[:] = x[:max_len]
+    else:
+        padded[:len(x)] = x
     return padded
+
+
+def convert_to_tensor(word2idx: Dict, sentences: pd.Series):
+    tensor = [[word2idx[s] for s in eng.split()]
+              for eng in sentences.values.tolist()]
+    tensor = [pad_sequences(x) for x in tensor]
+    return tensor
+
 
 class Data(Dataset):
     def __init__(self, input_sent, target_sent):
         self.input_sent = input_sent
         self.target_sent = target_sent
-    
+
     def __len__(self):
         return len(self.input_sent)
-    
+
     def __getitem__(self, index):
         x = self.input_sent[index]
         y = self.target_sent[index]
-        return x,y
-    
+        return x, y
 
 
-def get_dataset(batch_size=2,types="train",shuffle=True,num_workers=1,pin_memory=False,drop_last=True):
+def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_memory=False, drop_last=True):
     lines = pd.read_csv('Hindi_English_Truncated_Corpus.csv', encoding='utf-8')
     lines = lines[lines['source'] == 'ted']  # Remove other sources
     # print(lines.head(20))
@@ -100,28 +110,29 @@ def get_dataset(batch_size=2,types="train",shuffle=True,num_workers=1,pin_memory
         lambda x: len(x.split(" ")))
     lines = lines[lines['length_eng_sentence'] <= 20]
     lines = lines[lines['length_hin_sentence'] <= 20]
-    english_words  = get_vocab(lines['english_sentence'])
+
+    english_words = get_vocab(lines['english_sentence'])
     hindi_words = get_vocab(lines['hindi_sentence'])
     word2idx_eng = token_idx(english_words)
     word2idx_hin = token_idx(hindi_words)
-    idx2word_eng=idx_token(word2idx_eng)
-    idx2word_hin=idx_token(word2idx_hin)
-    input_tensor = [[word2idx_eng[s] for s in eng.split()] for eng in lines['english_sentence'].values.tolist()]
-    target_tensor = [[word2idx_hin[s] for s in hin.split()] for hin in lines['hindi_sentence'].values.tolist()]
-    input_tensor = [pad_sequences(x) for x in input_tensor]
-    target_tensor = [pad_sequences(x) for x in target_tensor]
-    # print(target_tensor[:10][2])
-    input_tensor_train, input_tensor_val, target_tensor_train, target_tensor_val = train_test_split(input_tensor, target_tensor, test_size=0.2, random_state = 42)
-    # print(len(input_tensor_train))
-    if types=="train":
+    idx2word_eng = idx_token(word2idx_eng)
+    idx2word_hin = idx_token(word2idx_hin)
+
+    input_tensor = convert_to_tensor(word2idx_eng, lines['english_sentence'])
+    target_tensor = convert_to_tensor(word2idx_hin, lines['hindi_sentence'])
+
+    input_tensor_train, input_tensor_val, target_tensor_train, target_tensor_val = train_test_split(
+        input_tensor, target_tensor, test_size=0.2, random_state=42)
+
+    if types == "train":
         train_dataset = Data(input_tensor_train, target_tensor_train)
-        return DataLoader(train_dataset,batch_size=batch_size,shuffle=shuffle,num_workers=num_workers,pin_memory=pin_memory,drop_last=drop_last),english_words,hindi_words
-    elif types=="val":
+        return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory, drop_last=drop_last), english_words, hindi_words
+    elif types == "val":
         val_dataset = Data(input_tensor_val, target_tensor_val)
-        return DataLoader(val_dataset,batch_size,shuffle=shuffle,num_workers=num_workers,pin_memory=pin_memory,drop_last=drop_last),idx2word_eng,idx2word_hin
+        return DataLoader(val_dataset, batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory, drop_last=drop_last), idx2word_eng, idx2word_hin
     else:
         raise ValueError("types must be in ['train','val']")
-    # print(next(iter(dataset)))
-# tensor=(next(iter(get_dataset(2))))
-# print(tensor)
-# print(len(tensor),tensor[0].shape,tensor[1].shape)
+
+
+if __name__ == "__main__":
+    get_dataset()
