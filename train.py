@@ -31,43 +31,20 @@ def train(input_tensor, target_tensor, mask_input, mask_target, encoder, decoder
         input_length = input_tensor_step.size(0)
 
         # Switch to bidirectional mode
-        if bidirectional:
-            encoder_outputs = torch.zeros(batch_size, max_length, 2 * encoder.hidden_size, device=device)
-            encoder_hidden_forward = encoder_hidden['forward']
-            encoder_hidden_backward = encoder_hidden['backward']
-            for ei in range(input_length):
-                (encoder_hidden_forward, encoder_hidden_backward) = encoder(
-                    (input_tensor_step[ei],input_tensor_step[input_length - 1 - ei]), (encoder_hidden_forward,encoder_hidden_backward))
+        
 
-            # Extract the hidden and cell states
-            hn_forward, cn_forward = encoder_hidden_forward
-            hn_backward, cn_backward = encoder_hidden_backward
-
-            # Concatenate the hidden and cell states for forward and backward paths.
-            encoder_hn = torch.cat((hn_forward, hn_backward), 2)
-            encoder_cn = torch.cat((cn_forward, cn_backward), 2)
-
-
-            # Only return the hidden and cell states for the last layer and pass it to the decoder
-            encoder_hn_last_layer = encoder_hn[-1].view(1, 1, -1)
-            encoder_cn_last_layer = encoder_cn[-1].view(1,1,-1)
-
-            # The list of states
-            encoder_hidden = [encoder_hn_last_layer, encoder_cn_last_layer]
-
-
-        else:
-            encoder_outputs = torch.zeros(batch_size, max_length, encoder.hidden_size, device=device)
-            for ei in range(input_length):
-                encoder_output, encoder_hidden = encoder(
-                    input_tensor_step[ei], encoder_hidden)
-                encoder_outputs[step_idx, ei, :] = encoder_output[0, 0]
+        
+        encoder_outputs = torch.zeros(batch_size, max_length, encoder.hidden_size, device=device)
+        for ei in range(input_length):
+            encoder_output, encoder_hidden = encoder(
+                input_tensor_step[ei], encoder_hidden)
+            encoder_outputs[step_idx, ei, :] = encoder_output[0, 0]
 
             # only return the hidden and cell states for the last layer and pass it to the decoder
-            hn, cn = encoder_hidden
-            encoder_hn_last_layer = hn[-1].view(1,1,-1)
-            encoder_cn_last_layer = cn[-1].view(1,1,-1)
-            encoder_hidden = [encoder_hn_last_layer, encoder_cn_last_layer]
+        hn, cn = encoder_hidden
+        encoder_hn_last_layer = hn[-1].view(1,1,-1)
+        encoder_cn_last_layer = cn[-1].view(1,1,-1)
+        encoder_hidden = [encoder_hn_last_layer, encoder_cn_last_layer]
 
         # A linear layer to establish the connection between the encoder/decoder layers.
         encoder_hidden = [bridge(item) for item in encoder_hidden]

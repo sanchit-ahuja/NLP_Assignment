@@ -63,51 +63,32 @@ class EncoderRNN(nn.Module):
         self.embedding = nn.Embedding(input_size, embedding_dim=hidden_size)
 
         # The LSTM layer for the input
-        if bidirectional:
-            self.lstm_forward = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, num_layers=num_layers)
-            self.lstm_backward = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, num_layers=num_layers)
-        else:
-            self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, num_layers=num_layers)
+         For nn.LSTM, same input_size & hidden_size is chosen.
+        :param input_size: The size of the input vocabulary
+        :param hidden_size: The hidden size of the RNN.
+        
+        
+        self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, num_layers=num_layers)
 
 
     def forward(self, input, hidden,bidirectional=False):
 
-        if bidirectional:
-            input_forward, input_backward = input
-            hidden_forward, hidden_backward = hidden
-            input_forward = self.embedding(input_forward).view(1, 1, -1)
-            input_backward = self.embedding(input_backward).view(1, 1, -1)
-
-            out_forward, (h_n_forward, c_n_forward) = self.lstm_forward(input_forward, hidden_forward)
-            out_backward, (h_n_backward, c_n_backward) = self.lstm_backward(input_backward, hidden_backward)
-
-            forward_state = (h_n_forward, c_n_forward)
-            backward_state = (h_n_backward, c_n_backward)
-            output_state = (forward_state, backward_state)
-
-            return output_state
-        else:
+        
+        
             # Make the data in the correct format as the RNN input.
-            embedded = self.embedding(input).view(1, 1, -1)
-            rnn_input = embedded
+        embedded = self.embedding(input).view(1, 1, -1)
+        rnn_input = embedded
             # The following descriptions of shapes and tensors are extracted from the official Pytorch documentation:
             # output-shape: (seq_len, batch, num_directions * hidden_size): tensor containing the output features (h_t) from the last layer of the LSTM
             # h_n of shape (num_layers * num_directions, batch, hidden_size): tensor containing the hidden state
             # c_n of shape (num_layers * num_directions, batch, hidden_size): tensor containing the cell state
-            output, (h_n, c_n) = self.lstm(rnn_input, hidden)
-            return output, (h_n, c_n)
+        output, (h_n, c_n) = self.lstm(rnn_input, hidden)
+        return output, (h_n, c_n)
 
     def initHidden(self,device):
-
-        if self.bidirectional:
-            encoder_state = [torch.zeros(self.num_layers, 1, self.hidden_size, device=device),
-                                      torch.zeros(self.num_layers, 1, self.hidden_size, device=device)]
-            encoder_state = {"forward": encoder_state, "backward": encoder_state}
-            return encoder_state
-        else:
-            encoder_state = [torch.zeros(self.num_layers, 1, self.hidden_size, device=device),
-                              torch.zeros(self.num_layers, 1, self.hidden_size, device=device)]
-            return encoder_state
+        encoder_state = [torch.zeros(self.num_layers, 1, self.hidden_size, device=device),
+            torch.zeros(self.num_layers, 1, self.hidden_size, device=device)]
+        return encoder_state
 
 class DecoderRNN(nn.Module):
     """

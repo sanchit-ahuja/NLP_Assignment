@@ -20,41 +20,18 @@ def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_l
         input_length = input_tensor.size(0)
         encoder_hidden = encoder.initHidden(device)
 
-        if bidirectional:
-            encoder_outputs = torch.zeros(args.batch_size, max_length, 2 * encoder.hidden_size, device=device)
-            encoder_hidden_forward = encoder_hidden['forward']
-            encoder_hidden_backward = encoder_hidden['backward']
+        
 
-            for ei in range(input_length):
-                (encoder_hidden_forward, encoder_hidden_backward) = encoder(
-                    (input_tensor[ei],input_tensor[input_length - 1 - ei]), (encoder_hidden_forward,encoder_hidden_backward))
-
-            # Extract the hidden and cell states
-            hn_forward, cn_forward = encoder_hidden_forward
-            hn_backward, cn_backward = encoder_hidden_backward
-
-            # Concatenate the hidden and cell states for forward and backward paths.
-            encoder_hn = torch.cat((hn_forward, hn_backward), 2)
-            encoder_cn = torch.cat((cn_forward, cn_backward), 2)
-
-
-            # Only return the hidden and cell states for the last layer and pass it to the decoder
-            encoder_hn_last_layer = encoder_hn[-1].view(1, 1, -1)
-            encoder_cn_last_layer = encoder_cn[-1].view(1,1,-1)
-
-            # The list of states
-            encoder_hidden_last = [encoder_hn_last_layer, encoder_cn_last_layer]
-
-        else:
-            for ei in range(input_length):
-                encoder_output, encoder_hidden = encoder(
+        
+        for ei in range(input_length):
+            encoder_output, encoder_hidden = encoder(
                     input_tensor[ei], encoder_hidden)
 
             # only return the hidden and cell states for the last layer and pass it to the decoder
-            hn, cn = encoder_hidden
-            encoder_hn_last_layer = hn[-1].view(1,1,-1)
-            encoder_cn_last_layer = cn[-1].view(1,1,-1)
-            encoder_hidden_last = [encoder_hn_last_layer, encoder_cn_last_layer]
+        hn, cn = encoder_hidden
+        encoder_hn_last_layer = hn[-1].view(1,1,-1)
+        encoder_cn_last_layer = cn[-1].view(1,1,-1)
+        encoder_hidden_last = [encoder_hn_last_layer, encoder_cn_last_layer]
 
         decoder_input = torch.tensor([SOS_token], device=device)  # SOS
         encoder_hidden_last = [bridge(item) for item in encoder_hidden_last]
