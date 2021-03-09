@@ -93,6 +93,10 @@ class Data(Dataset):
         y = self.target_sent[index]
         return x, y
 
+def save_dict(di_, filename_):
+    import pickle
+    with open(filename_, 'wb') as f:
+        pickle.dump(di_, f)
 
 def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_memory=False, drop_last=True):
     lines = pd.read_csv('Hindi_English_Truncated_Corpus.csv', encoding='utf-8')
@@ -123,7 +127,8 @@ def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_me
 
     input_tensor_train, input_tensor_val, target_tensor_train, target_tensor_val = train_test_split(
         input_tensor, target_tensor, test_size=0.2, random_state=42)
-
+    save_dict(input_tensor_train,'input_tensor_train.pkl')
+    save_dict(target_tensor_train,'target_tensor_train.pkl')
     if types == "train":
         train_dataset = Data(input_tensor_train, target_tensor_train)
         return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory, drop_last=drop_last), english_words, hindi_words

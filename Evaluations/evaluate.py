@@ -47,7 +47,7 @@ def test_convert_to_tensor():
     tens = convert_to_tensor(word_idx,sent)
     tens_correct = load_dict('tensor_val_correct.pkl')
     for arr, arr1 in zip(tens, tens_correct):
-        assert arr.all() == arr1.all()
+        assert (arr == arr1).all()
 
 def test_dataset_object():
     from preprocess import Data
