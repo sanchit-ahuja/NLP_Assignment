@@ -44,6 +44,7 @@ class EncoderRNN(nn.Module):
          be fed to the same network (W) for updating the weights.
         3. In the end, the last output will be the representative of the input sentence (called the "context vector").
     """
+
     def __init__(self, hidden_size, input_size, batch_size, num_layers=1, bidirectional=False):
         """
         * For nn.LSTM, same input_size & hidden_size is chosen.
@@ -63,32 +64,27 @@ class EncoderRNN(nn.Module):
         self.embedding = nn.Embedding(input_size, embedding_dim=hidden_size)
 
         # The LSTM layer for the input
-         For nn.LSTM, same input_size & hidden_size is chosen.
-        :param input_size: The size of the input vocabulary
-        :param hidden_size: The hidden size of the RNN.
-        
-        
-        self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, num_layers=num_layers)
 
+        self.lstm = nn.LSTM(input_size=hidden_size,
+                            hidden_size=hidden_size, num_layers=num_layers)
 
-    def forward(self, input, hidden,bidirectional=False):
+    def forward(self, input, hidden, bidirectional=False):
 
-        
-        
-            # Make the data in the correct format as the RNN input.
+        # Make the data in the correct format as the RNN input.
         embedded = self.embedding(input).view(1, 1, -1)
         rnn_input = embedded
-            # The following descriptions of shapes and tensors are extracted from the official Pytorch documentation:
-            # output-shape: (seq_len, batch, num_directions * hidden_size): tensor containing the output features (h_t) from the last layer of the LSTM
-            # h_n of shape (num_layers * num_directions, batch, hidden_size): tensor containing the hidden state
-            # c_n of shape (num_layers * num_directions, batch, hidden_size): tensor containing the cell state
+        # The following descriptions of shapes and tensors are extracted from the official Pytorch documentation:
+        # output-shape: (seq_len, batch, num_directions * hidden_size): tensor containing the output features (h_t) from the last layer of the LSTM
+        # h_n of shape (num_layers * num_directions, batch, hidden_size): tensor containing the hidden state
+        # c_n of shape (num_layers * num_directions, batch, hidden_size): tensor containing the cell state
         output, (h_n, c_n) = self.lstm(rnn_input, hidden)
         return output, (h_n, c_n)
 
-    def initHidden(self,device):
+    def initHidden(self, device):
         encoder_state = [torch.zeros(self.num_layers, 1, self.hidden_size, device=device),
-            torch.zeros(self.num_layers, 1, self.hidden_size, device=device)]
+                         torch.zeros(self.num_layers, 1, self.hidden_size, device=device)]
         return encoder_state
+
 
 class DecoderRNN(nn.Module):
     """
@@ -101,13 +97,15 @@ class DecoderRNN(nn.Module):
     2. The first output, shout be the first sentence of the output and so on.
     3. The output token generation ends with <EOS> being generated or the predefined max_length of the output sentence.
     """
+
     def __init__(self, hidden_size, output_size, batch_size, num_layers=1):
         super(DecoderRNN, self).__init__()
         self.batch_size = batch_size
         self.num_layers = num_layers
         self.hidden_size = hidden_size
         self.embedding = nn.Embedding(output_size, hidden_size)
-        self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, num_layers=1)
+        self.lstm = nn.LSTM(input_size=hidden_size,
+                            hidden_size=hidden_size, num_layers=1)
         self.out = nn.Linear(hidden_size, output_size)
 
     def forward(self, input, hidden):
@@ -116,13 +114,14 @@ class DecoderRNN(nn.Module):
         output = self.out(output[0])
         return output, (h_n, c_n)
 
-    def initHidden(self,device):
+    def initHidden(self, device):
         """
         The spesific type of the hidden layer for the RNN type that is used (LSTM).
         :return: All zero hidden state.
         """
         return [torch.zeros(self.num_layers, 1, self.hidden_size, device=device),
                 torch.zeros(self.num_layers, 1, self.hidden_size, device=device)]
+
 
 class Linear(nn.Module):
     """
@@ -139,8 +138,10 @@ class Linear(nn.Module):
         super(Linear, self).__init__()
         self.bidirectional = bidirectional
         num_directions = int(bidirectional) + 1
-        self.linear_connection_op = nn.Linear(num_directions * hidden_size_encoder, hidden_size_decoder)
-        self.connection_possibility_status = num_directions * hidden_size_encoder == hidden_size_decoder
+        self.linear_connection_op = nn.Linear(
+            num_directions * hidden_size_encoder, hidden_size_decoder)
+        self.connection_possibility_status = num_directions * \
+            hidden_size_encoder == hidden_size_decoder
 
     def forward(self, input):
 
@@ -148,7 +149,6 @@ class Linear(nn.Module):
             return input
         else:
             return self.linear_connection_op(input)
-
 
 
 # for i,data in enumerate(trainset,1):
@@ -199,7 +199,7 @@ class Linear(nn.Module):
 #                 #     decoder_input, decoder_hidden, encoder_outputs)
 #                 decoder_output, decoder_hidden = decoder(
 #                     decoder_input, decoder_hidden)
-                
+
 #                 topv, topi = decoder_output.topk(1)
 #                 print("top value and its corresponding index: {} {} and word {}".format(topv,topi,di))
 #                 decoder_input = topi.squeeze().detach()

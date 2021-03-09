@@ -64,7 +64,7 @@ def idx_token(wor2idx: Dict) -> Dict:
     return idx2word
 
 
-def pad_sequences(sent_tensor: List[List[int]], max_len: int=20):
+def pad_sequences(sent_tensor: List[List[int]], max_len: int=20) -> np.ndarray:
     padded = np.zeros((max_len), dtype=np.int64)
     if len(sent_tensor) > max_len:
         padded[:] = sent_tensor[:max_len]
@@ -93,7 +93,7 @@ class Data(Dataset):
         y = self.target_sent[index]
         return x, y
 
-def save_dict(di_, filename_):
+def save_dict(di_, filename_) -> None:
     import pickle
     with open(filename_, 'wb') as f:
         pickle.dump(di_, f)

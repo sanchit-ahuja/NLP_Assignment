@@ -72,3 +72,5 @@ def test_dataset_object():
 
 if __name__ == "__main__":
     test_dataset_object()
+    test_convert_to_tensor()
+    test_token_index()
