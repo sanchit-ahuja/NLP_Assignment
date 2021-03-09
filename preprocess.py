@@ -56,7 +56,7 @@ def token_idx(words: List) -> Dict:
 
 
 def idx_token(wor2idx: Dict) -> Dict:
-    idx2word = {1: 'SOS', 2: 'EOS', 'PAD': 0}
+    idx2word = {1: 'SOS', 2: 'EOS', 0: 'PAD'}
     for word, idx in wor2idx.items():
         if idx not in idx2word:
             idx2word[idx] = word
@@ -64,12 +64,12 @@ def idx_token(wor2idx: Dict) -> Dict:
     return idx2word
 
 
-def pad_sequences(x, max_len=20):
+def pad_sequences(sent_tensor: List[List[int]], max_len: int=20):
     padded = np.zeros((max_len), dtype=np.int64)
-    if len(x) > max_len:
-        padded[:] = x[:max_len]
+    if len(sent_tensor) > max_len:
+        padded[:] = sent_tensor[:max_len]
     else:
-        padded[:len(x)] = x
+        padded[:len(sent_tensor)] = sent_tensor
     return padded
 
 
