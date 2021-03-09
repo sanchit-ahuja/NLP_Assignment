@@ -24,37 +24,48 @@ def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_l
 
         
         for ei in range(input_length):
-            encoder_output, encoder_hidden = encoder(
-                    input_tensor[ei], encoder_hidden)
+            #Call the encoder for input tensors each work
+            encoder_output, encoder_hidden = #
 
             # only return the hidden and cell states for the last layer and pass it to the decoder
-        hn, cn = encoder_hidden
+        #Store the last hidden cells in hn,cn
+        hn, cn =
+
+        #Formatting the shape
         encoder_hn_last_layer = hn[-1].view(1,1,-1)
         encoder_cn_last_layer = cn[-1].view(1,1,-1)
+
+        #Appending the hidden and the cell state
         encoder_hidden_last = [encoder_hn_last_layer, encoder_cn_last_layer]
 
-        decoder_input = torch.tensor([SOS_token], device=device)  # SOS
+        #Initialize the decoder input as SOS_token
+        decoder_input =  #
+
+        #Calling the bridge layers and storing it as decoder initial hidden inputs.
         encoder_hidden_last = [bridge(item) for item in encoder_hidden_last]
         decoder_hidden = encoder_hidden_last
 
         decoded_words = []
         # decoder_attentions = torch.zeros(max_length, max_length)
 
+        #Iterate over maximum length of words
         for di in range(max_length):
-            decoder_output, decoder_hidden = decoder(
-                decoder_input, decoder_hidden)
-            # decoder_attentions[di] = decoder_attention.data
+
+            #Call the decoder object with hidden states and input as parameter
+            decoder_output, decoder_hidden = #
+            #Obtaining the top prediction amongst output which will be the output for that stage. This is called greedy approach
             topv, topi = decoder_output.data.topk(1)
             if topi.item() == EOS_token:
                 decoded_words.append('<EOS>')
                 break
             else:
-                decoded_words.append(index2word_hin[topi.item()])
-
+                #Append the converted word from the tensor using appropriate dictionaries
+                decoded_words.append(#)
+            #Squeezes the output index and will be fed again as the input for the next cell.
             decoder_input = topi.squeeze().detach()
 
-        # return decoded_words, decoder_attentions[:di + 1]
-        return decoded_words
+        # return decoded_words
+        return 
 
 
 ######################################################################
@@ -62,37 +73,43 @@ def evaluateRandomly(encoder, decoder, bridge,device,testset,idx2word_en,idx2wor
     j=0
     for i,data in enumerate(testset,1):
         j=j+1
-        pair = data
+        #Assign the value of data to pair
+        pair =#
+
+        #Getting the tensors and mask in the desired format
         input_tensor, mask_input = reformat_tensor_mask(pair[0].view(1,1,-1))
-        print(input_tensor.shape)
-        input_tensor = input_tensor[input_tensor != 0]
+        
+        #get the non zero values from the input tensor
+        input_tensor = #
+        
+        #Getting the ground truth tensors in their desired format
         output_tensor, mask_output = reformat_tensor_mask(pair[1].view(1,1,-1))
-        output_tensor = output_tensor[output_tensor != 0]
+
+        #Get values that are non zero
+        output_tensor = #
+
+        #Moving the tensors to gpu for faster processing.
         if device == torch.device("cuda"):
             input_tensor = input_tensor.cuda()
             output_tensor = output_tensor.cuda()
 
-        input_sentence = ' '.join(SentenceFromTensor_(idx2word_en, input_tensor))
-        output_sentence = ' '.join(SentenceFromTensor_(idx2word_hin, output_tensor))
+        #Call the SentenceFromTensor_ method using the idx2word dictionaries and the input and output tensor
+        #You must join the words to form a sentence
+        input_sentence = #
+        output_sentence = #
         print('Input: ', input_sentence)
         print('Output: ', output_sentence)
         input_tensor=input_tensor.to(device)
+
+        #CAlling the evaluate method
         output_words = evaluate(encoder, decoder, bridge, input_tensor,device,idx2word_hin)
+
+        #Joining the predicted output to form the predicted sentence
         output_sentence = ' '.join(output_words)
         print('Predicted Output: ', output_sentence)
         print('')
         if(j==n):
           break
 
-from preprocess import get_dataset
-device = torch.device("cpu")
-testset,idx2word_en,idx2word_hin = get_dataset(batch_size=1,types="val",shuffle=False,num_workers=1,pin_memory=False,drop_last=False)
-encoder=torch.load("encoder.pt")
-encoder=encoder.to(device)
 
-decoder=torch.load("decoder.pt")
-decoder=decoder.to(device)
-bridge=torch.load("bridge.pt")
-bridge=bridge.to(device)
-evaluateRandomly(encoder,decoder,bridge,device,testset,idx2word_en,idx2word_hin)
   
