@@ -15,12 +15,13 @@ EOS_TOKEN = 2
 PAD_TOKEN = 0
 MAX_LENGTH=20
 
+#(1 mark)
 def preprocess(sentence: str, hindi=False) -> str:
     # remove tabs and newlines
     sentence = ' '.join(sentence.split())
     ## Write your code below
     #convert the sentence into lower cases
-    sentence = #Remove this comment before writing code here.
+    sentence = #CODE_BLANK_1. #Remove this comment before writing code here.
     # remove accented chars such as in cafe
     sentence = unidecode.unidecode(sentence)
     # remove punctuation
@@ -32,36 +33,28 @@ def preprocess(sentence: str, hindi=False) -> str:
         sentence = re.sub("[२३०८१५७९४६]", "", sentence)
     ##Write your code below
     #remove trailing and leading extra white spaces
-    sentence = #
+    sentence = #CODE_BLANK_2
     ##Write your code below
-    #Join the senteces after removing all the extra spaces using split()
-    sentence = #
+    #Remove any access white spaces from within the sentence
+    sentence = #CODE_BLANK_3
     ##Write your code below
     #append the prepend the SOS token and append the EOS token to the sentence with spaces.
-    sentence = #
+    sentence = #CODE_BLANK_4
     return sentence
 
 #helper function 1. Returns a list of all the unique words in our corpora.
-
+#(0.5 marks)
 def get_vocab(lang: pd.Series) -> List:
-    all_words = set()
-    for sent in lang:
-        for word in sent.split():
-            if word not in all_words:
-                all_words.add(word)
+    #Write your code here and remove the next line which says pass before you submit
+    pass
 
-    return sorted(list(all_words))
-
+#(0.5 marks)
 #Helper 2: Creates a dictionary with token-> index mapping. Used in encoding.
 def token_idx(words: List) -> Dict:
-    word2idx = {'SOS': 1, 'EOS': 2, 'PAD': 0}
-    counter = 3
-    for word in words:
-        if word not in word2idx:
-            word2idx[word] = counter
-            counter += 1
-    return word2idx
+    #Write your code here and remove the next line which says pass before you submit
+    pass
 
+#(0.5 marks)
 #Helper 3: Creates a dictionary for index to word mapping. Used in decoding
 def idx_token(wor2idx: Dict) -> Dict:
     idx2word = {1: 'SOS', 2: 'EOS', 'PAD': 0}
@@ -70,6 +63,7 @@ def idx_token(wor2idx: Dict) -> Dict:
             idx2word[idx] = word
 
     return idx2word
+ 
 
 #Helper 4: Pads sequences to a particular length so that all the sequences are of same length in a batch.
 def pad_sequences(x, max_len=20):
