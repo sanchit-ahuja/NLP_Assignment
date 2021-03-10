@@ -213,20 +213,21 @@ def trainIters(trainloader,encoder, decoder, bridge,device,bidirectional=False,t
         print("epoch {} begins".format(i))
         #Write the code below
         
-        #fill in the _ with appropriate values and store them in iteration,data
+       
+        #CODE_BLANK_1 replace "_,_ " the for loop below correctly
         for _,_ in enumerate(trainloader, 1):
 
             #Assign the data to training_pair
-            training_pair = #
+            training_pair = #CODE_BLANK_2
 
             # Assign the input tensor 
-            input_tensor = #
+            input_tensor = #CODE_BLANK_3
 
             #This will process the tensor and returns in required format
             input_tensor, mask_input = reformat_tensor_mask(input_tensor)
 
             # Assign the target tensor
-            target_tensor = #
+            target_tensor = #CODE_BLANK_4
             target_tensor, mask_target = reformat_tensor_mask(target_tensor)
             
             #Moving the tensors to gpus for faster calculations
