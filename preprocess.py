@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 
-# This function is preprocessing a single sentence from the database
+
 
 #Defining the global Tokens.
 SOS_TOKEN = 1
@@ -15,6 +15,7 @@ EOS_TOKEN = 2
 PAD_TOKEN = 0
 MAX_LENGTH=20
 
+# This function is preprocessing a single sentence from the database
 #(1 mark)
 def preprocess(sentence: str, hindi=False) -> str:
     # remove tabs and newlines
