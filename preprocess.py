@@ -57,12 +57,8 @@ def token_idx(words: List) -> Dict:
 #(0.5 marks)
 #Helper 3: Creates a dictionary for index to word mapping. Used in decoding
 def idx_token(wor2idx: Dict) -> Dict:
-    idx2word = {1: 'SOS', 2: 'EOS', 'PAD': 0}
-    for word, idx in wor2idx.items():
-        if idx not in idx2word:
-            idx2word[idx] = word
-
-    return idx2word
+    #Write your code here and remove the next line which says pass before you submit
+    pass
  
 
 #Helper 4: Pads sequences to a particular length so that all the sequences are of same length in a batch.
