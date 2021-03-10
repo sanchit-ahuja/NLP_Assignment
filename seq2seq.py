@@ -53,14 +53,19 @@ class EncoderRNN(nn.Module):
         :param num_layers: Number of RNN layers. Default: 1
         :param bidirectional: If the encoder is a bi-directional LSTM. Default: False
         """
-        #Inheriteng the properties from nn.Module class.
         super(EncoderRNN, self).__init__()
-        ##Write Code below
-        #Initialize the class variables
-        self.batch_size = #
-        self.num_layers = #
-        self.bidirectional = #
-        self.hidden_size = #
+        self.batch_size = batch_size
+        self.num_layers = num_layers
+        self.bidirectional = bidirectional
+        self.hidden_size = hidden_size
+
+        # The input should be transformed to a vector that can be fed to the network.
+        self.embedding = nn.Embedding(input_size, embedding_dim=hidden_size)
+
+        # The LSTM layer for the input
+
+        self.lstm = nn.LSTM(input_size=hidden_size,
+                            hidden_size=hidden_size, num_layers=num_layers)
         
         """
          The input should be transformed to a vector that can be fed to the network.
@@ -88,7 +93,7 @@ class EncoderRNN(nn.Module):
         
         ##Write your code below
         #Feed the input to the embedding layer defined above and convert it to size (1,1,hidden size)
-        embedded = #
+        embedded = #CODE_BLANK_1
         rnn_input = embedded
             
             # The following descriptions of shapes and tensors are extracted from the official Pytorch documentation:
@@ -97,9 +102,9 @@ class EncoderRNN(nn.Module):
             # c_n of shape (num_layers * num_directions, batch, hidden_size): tensor containing the cell state
         
         #call the lstm layer.
-        output, (h_n, c_n) =#
+        output, (h_n, c_n) = #CODE_BLANK_2
         # return the ouput,(hidden_State,cell_State)
-        return
+        return #CODEBLANK3
 
     #Function to initialize the hidden input for the first lstm cell.
     def initHidden(self,device):
@@ -120,22 +125,23 @@ class DecoderRNN(nn.Module):
     """
     def __init__(self, hidden_size, output_size, batch_size, num_layers=1):
         super(DecoderRNN, self).__init__()
-        self.batch_size = #
-        self.num_layers = #
-        self.hidden_size = #
-        self.embedding = #
-        self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, num_layers=1)
+        self.batch_size = batch_size
+        self.num_layers = num_layers
+        self.hidden_size = hidden_size
+        self.embedding = nn.Embedding(output_size, hidden_size)
+        self.lstm = nn.LSTM(input_size=hidden_size,
+                            hidden_size=hidden_size, num_layers=1)
         self.out = nn.Linear(hidden_size, output_size)
 
     def forward(self, input, hidden):
         ##Write your code below
 
         #Call the embedding layer defined above and convert it to shape (1,1,hidden_Size)
-        output = #
+        output = #CODE_BLANK_1
         #Call the Lstm layer defined above
-        output, (h_n, c_n) = #
+        output, (h_n, c_n) = #CODE_BLANK_2
         #Call the output layer on the first element of the output
-        output = #
+        output = #CODE_BLANK_3
 
          # return the ouput,(hidden_State,cell_State)
         return output, (h_n, c_n)
@@ -181,11 +187,8 @@ class Linear(nn.Module):
         self.connection_possibility_status = num_directions * hidden_size_encoder == hidden_size_decoder
 
     def forward(self, input):
-
-        if self.connection_possibility_status:
-            return input
-        else:
-            return self.linear_connection_op(input)
+        #Write code here and rempve the line containing pass
+        pass
 
 
 
