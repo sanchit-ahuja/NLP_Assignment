@@ -62,12 +62,12 @@ def idx_token(wor2idx: Dict) -> Dict:
  
 
 #Helper 4: Pads sequences to a particular length so that all the sequences are of same length in a batch.
-def pad_sequences(x, max_len=20):
+def pad_sequences(sent_tensor: List[List[int]], max_len: int=20) -> np.ndarray:
     padded = np.zeros((max_len), dtype=np.int64)
-    if len(x) > max_len:
-        padded[:] = x[:max_len]
+    if len(sent_tensor) > max_len:
+        padded[:] = sent_tensor[:max_len]
     else:
-        padded[:len(x)] = x
+        padded[:len(sent_tensor)] = sent_tensor
     return padded
 
 #Converts a particular sentence to its corresponding numeric tensor using word2idx dictionary.
@@ -91,6 +91,7 @@ class Data(Dataset):
         y = self.target_sent[index]
         return x, y
 
+ #(1 mark)
 #Main function being called when we need to retrieve inout batch, output batch and DataLoader objects.
 def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_memory=False, drop_last=True):
     #Read the file 
@@ -99,47 +100,50 @@ def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_me
     lines = lines[lines['source'] == 'ted']  # Remove other sources
     ## Write your code below
     #Remove duplicate lines
-    #
+    #CODE_BLANK_1
+    
     #Random Sample of 25000 sentences
     lines = lines.sample(n=25000, random_state=42)
     ##Write your code below
     #Call preprocess functions on all english sentences
-    #
+    #CODE_BLANK_2
 
     #Call preprocess functions on all hindi sentences
-    #
+    #CODE_BLANK_3
 
-    #Retrieve length of all english sentences and store it in the lines dataframe under colums "length_english_sentence"
-    #
+    #Retrieve length of each english sentence and store it in the lines dataframe under a new column "length_english_sentence"
+    #CODE_BLANK_4
 
-    #Retrieve length of all english sentences and store it in the lines dataframe under colums "length_english_sentence"
-    #
+    #Retrieve length of each hindi sentences and store it in the lines dataframe under a new column "length_hindi_sentence"
+    #CODE_BLANK_5
 
     #Remove all the sentences with length less than max_length
-    #
-    #
+    #CODE_BLANK_6
+    #CODE_BLANK_7
 
     #Get List of english words
-    #       
+    # CODE_BLANK_8      
     
     #Get List of Hindi Words
-    #
+    #CODE_BLANK_9
 
     #Get word2idx_eng for english
-    #
+    #CODE_BLANK_10
     
     #Get word2idx_hin for hindi
-    #
+    #CODE_BLANK_11
 
     #get idx2word_eng for english
-    #
+    #CODE_BLANK_12
 
     #get idx2word_hin for hindi
-    #
+    #CODE_BLANK_13
     
     #Convert the sentences to tensors using dictionaries created above
     #English tensor in input_tensor
+#     CODE_BLANK_14
     #Hindi tensor in output_tensor
+    #CODE_BLANK_15
 
     #Calling the split function and doing a 80-20 split on the input and target tensors.
     input_tensor_train, input_tensor_val, target_tensor_train, target_tensor_val = train_test_split(
