@@ -38,18 +38,15 @@ we update the weights after each example and here we update after each batch
         """
         ##Write your code below
         #Call the method initHidden of encoder class
-        encoder_hidden = #
+        encoder_hidden = #CODE_BLANK_1
 
         """
         We will take the particular batch input and will select only those values which are non-zero.
         So select the input tensor value for this particular batch and select only the non zero values
         """
-        #Select the tensor particular batch member with index step_idx.
-        #Shape of the input tensor must be (MAX_LENGTH,batch_size)
-        input_tensor_step = #
 
-        #Selecting the non-zero values from the step tensor
-        input_tensor_step=input_tensor_step[input_tensor[:, step_idx] != 0]
+        #Selecting the non-zero values from the step tensor after initialising it
+        input_tensor_step = input_tensor[:, step_idx][input_tensor[:, step_idx] != 0]
 
         #After filtering out non-zero values, the size must be less than or equal to max_length.
         input_length = input_tensor_step.size(0)
@@ -58,21 +55,20 @@ we update the weights after each example and here we update after each batch
 
         #initializing output tensor for encoder output with size (batch_size,MAX_LENGTH,hidden_size)
         #In this case it must be (32,20,256)
-        encoder_outputs = torch.zeros(batch_size, max_length, encoder.hidden_size, device=device)
+        encoder_outputs = #CODE_BLANK_2
 
         #Iterating over each input word individually
         for ei in range(input_length):
 
             #Call the encoder with input as the input tensor step at index ei and hidden as the hidden state of last stage
-            encoder_output, encoder_hidden = #
+            encoder_output, encoder_hidden = #Code_BLANK_3
             
             #Store encoder output at each word at each batch in the encoder outputs tensor
-            #Fill the blanks in the below statement
-            encoder_outputs[_, _, :] = encoder_output[0, 0]
+            encoder_outputs[step_idx, ei, :] = encoder_output[0, 0]
 
         # only return the hidden and cell states for the last layer and pass it to the decoder
         #Assign the last encoder hidden states
-        hn, cn = #
+        hn, cn = #CODE_BLANK_4
 
         #Reshaping and selecting the last hidden states.
         encoder_hn_last_layer = hn[-1].view(1,1,-1)
@@ -92,13 +88,14 @@ we update the weights after each example and here we update after each batch
     #################
 
     #Assign the decoder input as a torch tensor with value [SOS]
-    decoder_input = #
+    decoder_input = #CODE_BLANK_5
 
     #Assign the initial decoder hidden states as the last hidden states retrieved above
-    decoder_hiddens = #
+    decoder_hiddens = #CODE_BLANK_6
 
     # teacher_forcing uses the real target outputs as the next input
     # rather than using the decoder's prediction.
+    #You can read more about teacher forcing online
     if teacher_forcing:
 
         for step_idx in range(batch_size):
@@ -122,17 +119,17 @@ we update the weights after each example and here we update after each batch
             for di in range(target_length):
 
                 #Call the decoder object and pass the decoder input and hidden state as the hidden state
-                decoder_output, decoder_hidden = #
+                decoder_output, decoder_hidden = #CODE_BLANK_7
                 
                 #Add loss for each decoder output and target_tensor for each word in target language
                 loss += criterion(decoder_output, target_tensor_step[di].view(1))
 
                 #This is the key step. The next decoder input must be taken from target_tensor_step which is the groun truth.
                 #Assign the tensor output step at index di(remember it is 1 step behind)
-                decoder_input = # Teacher forcing
+                decoder_input =  target_tensor_step[di]# Teacher forcing
        
-        #Loss will be calculated for all the sentences in a batch. We want it for each batch so divide it by batch size.
-        loss = loss / batch_size
+        #Calcaulate loss of the whole batch from the total loss for all sentences
+        loss = #Code_BLANK_8
 
     else:
         for step_idx in range(batch_size):
@@ -145,29 +142,26 @@ we update the weights after each example and here we update after each batch
 
             # Without teacher forcing: use its own predictions as the next input
             for di in range(target_length):
-                # decoder_output, decoder_hidden, decoder_attention = decoder(
-                #     decoder_input, decoder_hidden, encoder_outputs)
-                decoder_output, decoder_hidden = decoder(
-                    decoder_input, decoder_hidden)
+                decoder_output, decoder_hidden = #CODE_BLANK_9
                 topv, topi = decoder_output.topk(1)
                 decoder_input = topi.squeeze().detach()  # detach from history as input
 
                 loss += criterion(decoder_output, target_tensor_step[di].view(1))
                 if decoder_input.item() == EOS_token:
                     break
-        loss = loss /batch_size
+        loss = #CODE_BLANK_10
 
     #Call Backward prop for loss
-    loss.#
+   #CODE_BLANK_11
 
-    #Call Weight update for optimizers using step(). Note that we are doing this after each batch is passed
+    #Call Weight update for optimizers. Note that we are doing this after each batch is passed
     #The bridge layer is not being used since we dont have a bidirectional network and hence no weight updation is needed.
     
-    #
-    #
+    #CODE_BLANK_12
+    #CODE_BLANK_13
 
-    #This is the loss we are concerned about.
-    return loss.item() / target_length
+    #Return loss value normalised with target length
+    return #CODE_BLANK_14
 
 
 ######################################################################
