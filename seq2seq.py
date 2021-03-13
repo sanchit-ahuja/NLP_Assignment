@@ -173,9 +173,9 @@ class Linear(nn.Module):
         super(Linear, self).__init__()
         ##Write your code below
         #Initialize the variables
-        self.bidirectional = #
+        self.bidirectional = #CODE_BLANK_1
         #Value is bidirectional + 1
-        num_directions = #
+        num_directions = ##CODE_BLANK_2
 
         #Converts the Bidirectional output of the encoder to desired size of the decor input.
         self.linear_connection_op = nn.Linear(num_directions * hidden_size_encoder, hidden_size_decoder)
@@ -188,6 +188,7 @@ class Linear(nn.Module):
 
     def forward(self, input):
         #Write code here and rempve the line containing pass
+        ##CODE_BLANK_3
         pass
 
 
