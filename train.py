@@ -14,11 +14,11 @@ def train(input_tensor, target_tensor, mask_input, mask_target, encoder, decoder
     # At the decoding phase``<SOS>`` will be fed as the first input to the decoder
     # and the last hidden (state,cell) of the encoder will play the role of the first hidden (cell,state) of the decoder.
 
-"""
-It is very important to initialize the gradients to zero. 
-We want the gradients to be emptied before each batch. Remember in sgd 
-we update the weights after each example and here we update after each batch
-"""
+    """
+    It is very important to initialize the gradients to zero. 
+    We want the gradients to be emptied before each batch. Remember in sgd 
+    we update the weights after each example and here we update after each batch
+    """
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
     bridge_optimizer.zero_grad()
