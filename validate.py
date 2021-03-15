@@ -100,7 +100,8 @@ def evaluateRandomly(encoder, decoder, bridge,device,testset,idx2word_en,idx2wor
         print('Input: ', input_sentence)
         print('Output: ', output_sentence)
         input_tensor=input_tensor.to(device)
-
+        output_words = evaluate(encoder, decoder, bridge, input_tensor,device,idx2word_hin)
+        
         #CAlling the evaluate method
         #CODE_BlANK_6
 
