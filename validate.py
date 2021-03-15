@@ -64,8 +64,8 @@ def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_l
             #Squeezes the output index and will be fed again as the input for the next cell.
             decoder_input = topi.squeeze().detach()
 
-        # return decoded_words
-        return 
+        return decoded_words
+         
 
 
 ######################################################################
@@ -100,10 +100,10 @@ def evaluateRandomly(encoder, decoder, bridge,device,testset,idx2word_en,idx2wor
         print('Input: ', input_sentence)
         print('Output: ', output_sentence)
         input_tensor=input_tensor.to(device)
-        output_words = evaluate(encoder, decoder, bridge, input_tensor,device,idx2word_hin)
+        
         
         #CAlling the evaluate method
-        #CODE_BlANK_6
+        output_words = #CODE_BlANK_6
 
         #Joining the predicted output to form the predicted sentence
         output_sentence = ' '.join(output_words)
