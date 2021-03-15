@@ -28,7 +28,7 @@ def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_l
             encoder_output, encoder_hidden = #CODE_BLANK_1
 
             # only return the hidden and cell states for the last layer and pass it to the decoder
-        #Store the last hidden cells in hn,cn
+        #Store the encoder hidden cells in hn,cn
         hn, cn = #CODE_BLANK_2
 
         #Formatting the shape
@@ -56,7 +56,7 @@ def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_l
             #Obtaining the top prediction amongst output which will be the output for that stage. This is called greedy approach
             topv, topi = decoder_output.data.topk(1)
             if topi.item() == EOS_token:
-                #CODE_BLANK_5
+                #CODE_BLANK_5(Append EOS token to the decoded word list.)
                 break
             else:
                 #Append the converted word from the tensor using appropriate dictionaries
@@ -112,5 +112,14 @@ def evaluateRandomly(encoder, decoder, bridge,device,testset,idx2word_en,idx2wor
         if(j==n):
           break
 
-
-  
+from preprocess import get_dataset
+device = torch.device("cpu")
+testset,idx2word_en,idx2word_hin = get_dataset(batch_size=1,types="val",shuffle=False,num_workers=1,pin_memory=False,drop_last=False)
+encoder=torch.load("encoder.pt")
+encoder=encoder.to(device)
+decoder=torch.load("decoder.pt")
+decoder=decoder.to(device)
+bridge=torch.load("bridge.pt")
+bridge=bridge.to(device)
+evaluateRandomly(encoder,decoder,bridge,device,testset,idx2word_en,idx2word_hin)
+ 
