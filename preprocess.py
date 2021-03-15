@@ -6,7 +6,10 @@ import re
 import numpy as np
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
-
+import configparser
+config = configparser.ConfigParser()
+config.read("dev.config")
+config=config["values"]
 
 
 #Defining the global Tokens.
@@ -104,7 +107,7 @@ def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_me
     #CODE_BLANK_1
     
     #Random Sample of 25000 sentences
-    lines = lines.sample(n=25000, random_state=42)
+    lines = lines.sample(n=int(config["samples"]), random_state=42)
     ##Write your code below
     #Call preprocess functions on all english sentences
     #CODE_BLANK_2
