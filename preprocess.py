@@ -6,7 +6,10 @@ import re
 import numpy as np
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
-
+import configparser
+config = configparser.ConfigParser()
+config.read("dev.config")
+config=config["values"]
 # This function is preprocessing a single sentence from the database
 
 SOS_TOKEN = 1
@@ -103,7 +106,7 @@ def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_me
     lines = lines[lines['source'] == 'ted']  # Remove other sources
     # print(lines.head(20))
     lines.drop_duplicates(inplace=True)
-    lines = lines.sample(n=25000, random_state=42)
+    lines = lines.sample(n=int(config["samples"]), random_state=42)
     lines['english_sentence'] = lines['english_sentence'].apply(
         lambda x: preprocess(x))
     lines['hindi_sentence'] = lines['hindi_sentence'].apply(

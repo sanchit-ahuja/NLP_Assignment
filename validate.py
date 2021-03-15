@@ -28,56 +28,84 @@ def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_l
                     input_tensor[ei], encoder_hidden)
 
             # only return the hidden and cell states for the last layer and pass it to the decoder
+        
         hn, cn = encoder_hidden
+        
+        
         encoder_hn_last_layer = hn[-1].view(1,1,-1)
         encoder_cn_last_layer = cn[-1].view(1,1,-1)
+        
+        
         encoder_hidden_last = [encoder_hn_last_layer, encoder_cn_last_layer]
 
+        
         decoder_input = torch.tensor([SOS_token], device=device)  # SOS
+        
+        
         encoder_hidden_last = [bridge(item) for item in encoder_hidden_last]
         decoder_hidden = encoder_hidden_last
 
         decoded_words = []
         # decoder_attentions = torch.zeros(max_length, max_length)
 
+        
         for di in range(max_length):
+            
+            
             decoder_output, decoder_hidden = decoder(
                 decoder_input, decoder_hidden)
-            # decoder_attentions[di] = decoder_attention.data
             topv, topi = decoder_output.data.topk(1)
             if topi.item() == EOS_token:
                 decoded_words.append('<EOS>')
                 break
             else:
+                
                 decoded_words.append(index2word_hin[topi.item()])
 
             decoder_input = topi.squeeze().detach()
 
-        # return decoded_words, decoder_attentions[:di + 1]
         return decoded_words
 
 
 ######################################################################
+
 def evaluateRandomly(encoder, decoder, bridge,device,testset,idx2word_en,idx2word_hin, n=10):
     j=0
     for i,data in enumerate(testset,1):
         j=j+1
+        
         pair = data
+        
+        
         input_tensor, mask_input = reformat_tensor_mask(pair[0].view(1,1,-1))
-        print(input_tensor.shape)
+        
+        
         input_tensor = input_tensor[input_tensor != 0]
+        
+        
         output_tensor, mask_output = reformat_tensor_mask(pair[1].view(1,1,-1))
+        
+        
         output_tensor = output_tensor[output_tensor != 0]
+        
+        
         if device == torch.device("cuda"):
             input_tensor = input_tensor.cuda()
             output_tensor = output_tensor.cuda()
 
+        
+        
         input_sentence = ' '.join(SentenceFromTensor_(idx2word_en, input_tensor))
         output_sentence = ' '.join(SentenceFromTensor_(idx2word_hin, output_tensor))
         print('Input: ', input_sentence)
         print('Output: ', output_sentence)
         input_tensor=input_tensor.to(device)
+        
+        
+        
         output_words = evaluate(encoder, decoder, bridge, input_tensor,device,idx2word_hin)
+        
+        
         output_sentence = ' '.join(output_words)
         print('Predicted Output: ', output_sentence)
         print('')
@@ -89,7 +117,6 @@ device = torch.device("cpu")
 testset,idx2word_en,idx2word_hin = get_dataset(batch_size=1,types="val",shuffle=False,num_workers=1,pin_memory=False,drop_last=False)
 encoder=torch.load("encoder.pt")
 encoder=encoder.to(device)
-
 decoder=torch.load("decoder.pt")
 decoder=decoder.to(device)
 bridge=torch.load("bridge.pt")
