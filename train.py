@@ -53,7 +53,7 @@ we update the weights after each example and here we update after each batch
 
         
 
-        #initializing output tensor for encoder output with size (batch_size,MAX_LENGTH,hidden_size)
+        #initializing output tensor for encoder output with size (batch_size, max_length, encoder.hidden_size) and assign it to appropriate device
         #In this case it must be (32,20,256)
         encoder_outputs = #CODE_BLANK_2
 
@@ -90,7 +90,7 @@ we update the weights after each example and here we update after each batch
     #Assign the decoder input as a torch tensor with value [SOS]
     decoder_input = #CODE_BLANK_5
 
-    #Assign the initial decoder hidden states as the last hidden states retrieved above
+    #Assign the initial decoder hidden states as the last hidden states of encoder retrieved above
     decoder_hiddens = #CODE_BLANK_6
 
     # teacher_forcing uses the real target outputs as the next input
@@ -128,7 +128,7 @@ we update the weights after each example and here we update after each batch
                 #Assign the tensor output step at index di(remember it is 1 step behind)
                 decoder_input =  target_tensor_step[di]# Teacher forcing
        
-        #Calcaulate loss of the whole batch from the total loss for all sentences
+        #find loss normalised with batch size in the below code blank 8
         loss = #Code_BLANK_8
 
     else:
@@ -215,7 +215,7 @@ def trainIters(trainloader,encoder, decoder, bridge,device,bidirectional=False,t
         
        
         #CODE_BLANK_1 replace "_,_ " the for loop below correctly
-        for _,_ in enumerate(trainloader, 1):
+        for iteration,_ in enumerate(trainloader, 1):
 
             #Assign the data to training_pair
             training_pair = #CODE_BLANK_2
