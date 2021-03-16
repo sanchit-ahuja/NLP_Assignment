@@ -188,7 +188,10 @@ class Linear(nn.Module):
 
     def forward(self, input):
         #Write code here and rempve the line containing pass
-        ##CODE_BLANK_3
+        if self.connection_possibility_status:
+            return #code_blank3
+        else:
+            return #code_blank4
         pass
 
 
