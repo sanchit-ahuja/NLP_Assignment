@@ -39,23 +39,38 @@ def preprocess(sentence: str, hindi=False) -> str:
     #remove trailing and leading extra white spaces
     sentence = #CODE_BLANK_2
     ##Write your code below
-    #Remove any access white spaces from within the sentence
+    #Remove any excess white spaces from within the sentence
     sentence = #CODE_BLANK_3
     ##Write your code below
     #append the prepend the SOS token and append the EOS token to the sentence with spaces.
     sentence = #CODE_BLANK_4
+
+    ''' for an expected input of sentence = ' hi, my name is  sam  ', output will be 'hi my name is sam'
+    '''
+
     return sentence
 
 #helper function 1. Returns a list of all the unique words in our corpora.
 #(0.5 marks)
 def get_vocab(lang: pd.Series) -> List:
     #Write your code here and remove the next line which says pass before you submit
+    '''
+       For a pd.series object like 
+       1. Would you like some tea
+       2. do you know my name
+
+       output should be 
+       ['do', 'know', 'like', 'my', 'name', 'some', 'tea', 'would', 'you']
+    '''
     pass
 
 #(0.5 marks)
 #Helper 2: Creates a dictionary with token-> index mapping. Used in encoding.
 def token_idx(words: List) -> Dict:
     #Write your code here and remove the next line which says pass before you submit
+    '''
+        input of words ['a','b','c'] -> output should be {'a': 1, 'b' : 2, 'c': 3}
+    '''
     pass
 
 #(0.5 marks)
