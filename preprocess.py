@@ -7,8 +7,10 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 import configparser
+import os 
+dir_path = os.path.dirname(os.path.realpath(__file__))
 config = configparser.ConfigParser()
-config.read("dev.config")
+config.read(os.path.join(dir_path,"dev.config"))
 config=config["values"]
 # This function is preprocessing a single sentence from the database
 
