@@ -5,7 +5,6 @@ from collections import OrderedDict
 from typing import Dict
 
 import pandas as pd
-from numpy.lib.npyio import save
 
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
@@ -49,6 +48,12 @@ def test_convert_to_tensor():
     for arr, arr1 in zip(tens, tens_correct):
         assert (arr == arr1).all()
 
+def test_get_vocab():
+    sent = pd.read_pickle('pd_lines_eng.pkl')
+    from preprocess import get_vocab
+    vocab = get_vocab(sent)
+    print(vocab)
+
 def test_dataset_object():
     from preprocess import Data
     input_tensor_train = load_dict('input_tensor_train.pkl')
@@ -71,6 +76,4 @@ def test_dataset_object():
 
 
 if __name__ == "__main__":
-    test_dataset_object()
-    test_convert_to_tensor()
-    test_token_index()
+    test_get_vocab()
