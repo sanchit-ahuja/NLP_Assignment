@@ -9,7 +9,7 @@ from utils.transformer import *
 SOS_TOKEN = 1
 EOS_TOKEN = 2
 PAD_TOKEN = 0
-def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_length=20,bidirectional=False):
+def evaluate(encoder, decoder, input_tensor,device,index2word_hin, max_length=20,bidirectional=False):
 
 
     # Required for tensor matching.
@@ -29,20 +29,18 @@ def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_l
 
             # only return the hidden and cell states for the last layer and pass it to the decoder
         
-        hn, cn = encoder_hidden
+        encoder_hidden_state = encoder_hidden
         
         
-        encoder_hn_last_layer = hn[-1].view(1,1,-1)
-        encoder_cn_last_layer = cn[-1].view(1,1,-1)
+        encoder_hn_last_layer = encoder_hidden_state[-1].view(1,1,-1)
         
         
-        encoder_hidden_last = [encoder_hn_last_layer, encoder_cn_last_layer]
+        encoder_hidden_last = encoder_hn_last_layer
 
         
         decoder_input = torch.tensor([SOS_token], device=device)  # SOS
         
         
-        encoder_hidden_last = [bridge(item) for item in encoder_hidden_last]
         decoder_hidden = encoder_hidden_last
 
         decoded_words = []

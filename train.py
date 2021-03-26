@@ -9,7 +9,7 @@ from torch import device
 
 #The train function is called for each batch for each epoch
 #An epoch is completed once we iterate through all the examples in out training data
-def train(input_tensor, target_tensor, mask_input, mask_target, encoder, decoder, bridge, encoder_optimizer, decoder_optimizer, bridge_optimizer,device, criterion, max_length,batch_size=32,bidirectional=False,teacher_forcing=True):
+def train(input_tensor, target_tensor, mask_input, mask_target, encoder, decoder, encoder_optimizer, decoder_optimizer,device, criterion, max_length,batch_size=32,bidirectional=False,teacher_forcing=True):
     # To train, each element of the input sentence will be fed to the encoder.
     # At the decoding phase``<SOS>`` will be fed as the first input to the decoder
     # and the last hidden (state,cell) of the encoder will play the role of the first hidden (cell,state) of the decoder.
@@ -21,8 +21,6 @@ def train(input_tensor, target_tensor, mask_input, mask_target, encoder, decoder
     """
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
-    bridge_optimizer.zero_grad()
-
     # Define a list for the last hidden layer
     encoder_hiddens_last = []
 
@@ -67,17 +65,15 @@ def train(input_tensor, target_tensor, mask_input, mask_target, encoder, decoder
 
             # only return the hidden and cell states for the last layer and pass it to the decoder
             #            
-        hn, cn = encoder_hidden
+        last_encoder_hidden= encoder_hidden
         
         
-        encoder_hn_last_layer = hn[-1].view(1,1,-1)
-        encoder_cn_last_layer = cn[-1].view(1,1,-1)
+        encoder_hidden_last_layer = last_encoder_hidden.view(1,1,-1)
         
         #
-        encoder_hidden = [encoder_hn_last_layer, encoder_cn_last_layer]
+        encoder_hidden = encoder_hidden_last_layer
 
         # A linear layer to establish the connection between the encoder/decoder layers.
-        encoder_hidden = [bridge(item) for item in encoder_hidden]
         
         #
         encoder_hiddens_last.append(encoder_hidden)
@@ -188,7 +184,7 @@ def timeSince(since, percent):
 
 
 
-def trainIters(trainloader,encoder, decoder, bridge,device,bidirectional=False,teacher_forcing=True,num_epochs=600,batch_size=32,max_length=20, print_every=1000, plot_every=100, learning_rate=0.1):
+def trainIters(trainloader,encoder, decoder,device,bidirectional=False,teacher_forcing=True,num_epochs=600,batch_size=32,max_length=20, print_every=1000, plot_every=100, learning_rate=0.1):
 
     start = time.time()
     plot_losses = []
@@ -198,7 +194,6 @@ def trainIters(trainloader,encoder, decoder, bridge,device,bidirectional=False,t
     
     encoder_optimizer = optim.SGD(encoder.parameters(), lr=learning_rate)
     decoder_optimizer = optim.SGD(decoder.parameters(), lr=learning_rate)
-    bridge_optimizer = optim.SGD(bridge.parameters(), lr=learning_rate)
     
     
     criterion = nn.CrossEntropyLoss()
@@ -237,7 +232,7 @@ def trainIters(trainloader,encoder, decoder, bridge,device,bidirectional=False,t
             
             
             loss = train(input_tensor, target_tensor, mask_input, mask_target, encoder,
-                         decoder, bridge, encoder_optimizer, decoder_optimizer, bridge_optimizer,device, criterion,max_length,batch_size)
+                         decoder,  encoder_optimizer, decoder_optimizer,device, criterion,max_length,batch_size)
             
             
             print_loss_total += loss
