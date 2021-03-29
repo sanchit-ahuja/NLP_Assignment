@@ -118,9 +118,9 @@ def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_me
         lambda x: len(x.split(" ")))
     lines['length_hin_sentence'] = lines['hindi_sentence'].apply(
         lambda x: len(x.split(" ")))
-    lines = lines[lines['length_eng_sentence'] <= 20]
-    lines = lines[lines['length_hin_sentence'] <= 20]
-
+    lines = lines[lines['length_eng_sentence'] < 20]
+    lines = lines[lines['length_hin_sentence'] < 20]
+    pd.to_pickle(lines['english_sentence'],'pd_lines_eng_less_20.pkl')
     english_words = get_vocab(lines['english_sentence'])
     hindi_words = get_vocab(lines['hindi_sentence'])
     word2idx_eng = token_idx(english_words)

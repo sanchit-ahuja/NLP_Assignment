@@ -74,33 +74,16 @@ def test_preprocess():
 
 def test_get_vocab():
     sent = pd.read_pickle('pd_lines_eng.pkl')
+    sent_less_20 = pd.read_pickle('pd_lines_eng_less_20.pkl')
     from preprocess import get_vocab
     vocab = get_vocab(sent)
     vocab = sorted(list(vocab))
     vocab_correct = load_dict('vocab_file.pkl')
+    vocab_less_20_correct = load_dict('vocab_less_20.pkl')
     vocab_correct = sorted(list(vocab_correct))
-    assert vocab == vocab_correct
+    assert vocab == vocab_correct or vocab == vocab_less_20_correct
 
 
-# def test_dataset_object():
-#     from preprocess import Data
-#     input_tensor_train = load_dict('input_tensor_train.pkl')
-#     target_tensor_train = load_dict('target_tensor_train.pkl')
-#     dataset = Data(input_tensor_train, target_tensor_train)
-#     item_10_correct = load_dict('item_10.pkl')
-#     item_21_correct = load_dict('item_21.pkl')
-#     item_45_correct = load_dict('item_45.pkl')
-#     item_100_correct = load_dict('item_100.pkl')
-
-#     assert (dataset.__getitem__(10)[0] == item_10_correct[0]).all()
-#     assert (dataset.__getitem__(21)[0] == item_21_correct[0]).all()
-#     assert (dataset.__getitem__(45)[0] == item_45_correct[0]).all()
-#     assert (dataset.__getitem__(100)[0] == item_100_correct[0]).all()
-
-#     assert (dataset.__getitem__(10)[1] == item_10_correct[1]).all()
-#     assert (dataset.__getitem__(21)[1] == item_21_correct[1]).all()
-#     assert (dataset.__getitem__(45)[1] == item_45_correct[1]).all()
-#     assert (dataset.__getitem__(100)[1] == item_100_correct[1]).all()
 
 
 
@@ -127,9 +110,9 @@ def test_get_dataset_func():
 
 if __name__ == "__main__":
     test_get_vocab()
-    test_index_token()
-    test_token_index()
-    test_get_dataset_func()
+    # test_index_token()
+    # test_token_index()
+    # test_get_dataset_func()
     # from preprocess import get_dataset
     # a,b,c = get_dataset(batch_size = 16,shuffle=False, num_workers=0)
     # print(a.dataset.__getitem__(12)[0])
