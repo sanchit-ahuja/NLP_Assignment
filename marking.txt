@@ -1,0 +1,6 @@
+0.5 marks awarded for get_vocab function
+0.5 marks awarded for index to token dictionary
+0.5 marks awarded for token to index dictionary
+1.75 marks awarded for get dataset function
+0.5 marks awarded for preprocess function
+Total Marks 3.75

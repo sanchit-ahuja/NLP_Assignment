@@ -10,7 +10,8 @@ import configparser
 import os 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 config = configparser.ConfigParser()
-config.read(os.path.join(dir_path,"dev.config"))
+config.read('dev.config')
+# config.read(os.path.join(dir_path,"dev.config"))
 config=config["values"]
 # This function is preprocessing a single sentence from the database
 
@@ -25,7 +26,7 @@ def preprocess(sentence: str, hindi=False) -> str:
     # sentence to lower
     sentence = sentence.lower()
     # remove accented chars such as in cafe
-    # sentence = unidecode.unidecode(sentence)
+    sentence = unidecode.unidecode(sentence)
     # remove punctuation
     sentence = sentence.translate(str.maketrans('', '', string.punctuation))
     # remove digits
@@ -132,8 +133,7 @@ def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_me
 
     input_tensor_train, input_tensor_val, target_tensor_train, target_tensor_val = train_test_split(
         input_tensor, target_tensor, test_size=0.2, random_state=42)
-    save_dict(input_tensor_train,'input_tensor_train.pkl')
-    save_dict(target_tensor_train,'target_tensor_train.pkl')
+
     if types == "train":
         train_dataset = Data(input_tensor_train, target_tensor_train)
         return DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory, drop_last=drop_last), english_words, hindi_words
@@ -142,6 +142,7 @@ def get_dataset(batch_size=2, types="train", shuffle=True, num_workers=1, pin_me
         return DataLoader(val_dataset, batch_size, shuffle=shuffle, num_workers=num_workers, pin_memory=pin_memory, drop_last=drop_last), idx2word_eng, idx2word_hin
     else:
         raise ValueError("types must be in ['train','val']")
+
 
 
 if __name__ == "__main__":
