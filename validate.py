@@ -1,15 +1,15 @@
-##############
-# Evaluation #
-##############
-#
-# In evaluation, we simply feed the sequence and observe the output.
-# The generation will be over once the "EOS" has been generated.
+
+
+
+
+
+
 import torch
 from utils.transformer import *
 SOS_TOKEN = 1
 EOS_TOKEN = 2
 PAD_TOKEN = 0
-def evaluate(encoder, decoder, input_tensor,device,index2word_hin, max_length=20,bidirectional=False):
+def evaluate(encoder, decoder, bridge, input_tensor,device,index2word_hin, max_length=20,bidirectional=False):
 
 
     # Required for tensor matching.
@@ -24,25 +24,27 @@ def evaluate(encoder, decoder, input_tensor,device,index2word_hin, max_length=20
 
         
         for ei in range(input_length):
+           
             encoder_output, encoder_hidden = encoder(
                     input_tensor[ei], encoder_hidden)
 
             # only return the hidden and cell states for the last layer and pass it to the decoder
-        
-        encoder_hidden_state = encoder_hidden
-        
-        
-        encoder_hn_last_layer = encoder_hidden_state[-1].view(1,1,-1)
+        hn, cn = encoder_hidden
         
         
-        encoder_hidden_last = encoder_hn_last_layer
+        encoder_hn_last_layer = hn[-1].view(1,1,-1)
+        encoder_cn_last_layer = cn[-1].view(1,1,-1)
+        encoder_hidden_last = [encoder_hn_last_layer, encoder_cn_last_layer]
 
-        
         decoder_input = torch.tensor([SOS_token], device=device)  # SOS
+        
+        
+        encoder_hidden_last = [bridge(item) for item in encoder_hidden_last]
         
         
         decoder_hidden = encoder_hidden_last
 
+        
         decoded_words = []
         # decoder_attentions = torch.zeros(max_length, max_length)
 
@@ -57,17 +59,17 @@ def evaluate(encoder, decoder, input_tensor,device,index2word_hin, max_length=20
                 decoded_words.append('<EOS>')
                 break
             else:
-                
                 decoded_words.append(index2word_hin[topi.item()])
 
             decoder_input = topi.squeeze().detach()
 
+        # return decoded_words, decoder_attentions[:di + 1]
         return decoded_words
 
 
 ######################################################################
-
 def evaluateRandomly(encoder, decoder, bridge,device,testset,idx2word_en,idx2word_hin, n=10):
+    
     j=0
     for i,data in enumerate(testset,1):
         j=j+1
@@ -102,7 +104,7 @@ def evaluateRandomly(encoder, decoder, bridge,device,testset,idx2word_en,idx2wor
         
         
         output_words = evaluate(encoder, decoder, bridge, input_tensor,device,idx2word_hin)
-        
+
         
         output_sentence = ' '.join(output_words)
         print('Predicted Output: ', output_sentence)
@@ -120,4 +122,3 @@ decoder=decoder.to(device)
 bridge=torch.load("bridge.pt")
 bridge=bridge.to(device)
 evaluateRandomly(encoder,decoder,bridge,device,testset,idx2word_en,idx2word_hin)
-  
