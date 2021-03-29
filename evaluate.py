@@ -158,7 +158,7 @@ def test_get_dataset_func():
 
         assert (dataset.dataset.__getitem__(15)[1] == item_15_correct[1]).all() or (dataset.dataset.__getitem__(15)[1] == item_15_correct_less_20[1]).all()
 
-        assert (dataset.dataset.__getitem__(1)[1] == item_1_correct[0]).all() or (dataset.dataset.__getitem__(1)[1] == item_1_correct[1]).all()
+        assert (dataset.dataset.__getitem__(1)[1] == item_1_correct[1]).all() or (dataset.dataset.__getitem__(1)[1] == item_1_correct[1]).all()
         f = open("marking.txt", "a")
         f.write("1.75 marks awarded for get dataset function\n")
         f.close()
