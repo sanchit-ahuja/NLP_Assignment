@@ -4,7 +4,6 @@ from typing import Dict
 import pandas as pd
 from torch.utils import data
 from torch.utils.data import dataloader
-
 ENGLISH_WORD_TEST_CASES = ['EOS', 'SOS', 'a', 'aaaahhh', 'aaron', 'ab', 'abacha', 'abandoned', 'abc', 'abducting', 'abdul', 'abe', 'abhishek', 'abilities', 'ability', 'abject', 'able', 'abnormality', 'abode', 'abolished',
                            'abololo', 'about', 'about”', 'above', 'abraham', 'abrahams', 'abroad', 'absence', 'absent', 'absolute', 'absolutely', 'absoluteness', 'absolution', 'absorb', 'absorbing', 'abstract', 'absurd', 'abu', 'abundance', 'abundant']
 
@@ -39,21 +38,44 @@ def save_dict(di_, filename_):
 
 def test_token_index():
     from preprocess import token_idx
+    global marks
     test_dic_token_idx = token_idx(ENGLISH_WORD_TEST_CASES)
     actual_dic_token_idx = load_dict('word_idx_token.pkl')
-    assert testing_dict(test_dic_token_idx, actual_dic_token_idx) == True
+    try:
+        assert testing_dict(test_dic_token_idx, actual_dic_token_idx) == True
+        f = open("marking.txt", "a")
+        f.write("0.5 marks awarded for token to index dictionary\n")
+        f.close()
+        marks += 0.5
+    except Exception as ex:
+        print("Error in converting from token to index with error {} 0 marks awarded".format(ex))
+        f = open("marking.txt", "a")
+        f.write("0 marks awarded for token to index dictionary\n")
+        f.close()
 
 
 def test_index_token():
     from preprocess import idx_token
+    global marks
     test_dic_word_idx = idx_token(WORD_IDX_DICT_TEST_CASES)
     actual_dic_word_idx = load_dict('idx_word_token.pkl')
     # print(test_dic_word_idx)
-    assert testing_dict(test_dic_word_idx, actual_dic_word_idx, False)
+    try:
+        assert testing_dict(test_dic_word_idx, actual_dic_word_idx, False)
+        f = open("marking.txt", "a")
+        f.write("0.5 marks awarded for index to token dictionary\n")
+        f.close()
+        marks += 0.5
+    except Exception as ex:
+        print("Error in converting from index to token with error {} 0 marks awarded".format(ex))
+        f = open("marking.txt", "a")
+        f.write("0 marks awarded for index to token dictionary\n")
+        f.close()
 
 
 def test_preprocess():
     from preprocess import preprocess
+    global marks
     correct_sent_eng = load_dict('correct_preprocess_eng.pkl')
     correct_sent_hindi = load_dict('correct_preprocess_hindi.pkl')
     correct_sent_hindi_unide = load_dict('unide_correct_preprocess_hindi.pkl')
@@ -68,8 +90,18 @@ def test_preprocess():
 
     test_sent_eng = sorted(test_sent_eng)
     test_sent_hindi = sorted(test_sent_hindi)
-    assert test_sent_eng == correct_sent_eng
-    assert test_sent_hindi == correct_sent_hindi or test_sent_hindi == correct_sent_hindi_unide
+    try:
+        assert test_sent_eng == correct_sent_eng
+        assert test_sent_hindi == correct_sent_hindi or test_sent_hindi == correct_sent_hindi_unide
+        f = open("marking.txt", "a")
+        f.write("0.5 marks awarded for preprocess function\n")
+        f.close()
+        marks += 0.5
+    except Exception as ex:
+        print("Error in preprocess function with error {} 0 marks awarded".format(ex))
+        f = open("marking.txt", "a")
+        f.write("0 marks awarded for preprocess function\n")
+        f.close()
 
 
 def test_get_vocab():
@@ -77,45 +109,83 @@ def test_get_vocab():
     sent_less_20 = pd.read_pickle('pd_lines_eng_less_20.pkl')
     from preprocess import get_vocab
     vocab = get_vocab(sent)
+    vocab_less_20 = get_vocab(sent_less_20)
     vocab = sorted(list(vocab))
+    global marks
     vocab_correct = load_dict('vocab_file.pkl')
     vocab_less_20_correct = load_dict('vocab_less_20.pkl')
     vocab_correct = sorted(list(vocab_correct))
-    assert vocab == vocab_correct or vocab == vocab_less_20_correct
-
-
-
+    try:
+        assert vocab == vocab_correct or vocab_less_20 == vocab_less_20_correct
+        f = open("marking.txt", "a")
+        f.write("0.5 marks awarded for get_vocab function\n")
+        f.close()
+        marks += 0.5
+    except Exception as ex:
+        print("Error in get vocab function with error {} 0 marks awarded".format(ex))
+        f = open("marking.txt", "a")
+        f.write("0 marks awarded for get vocab function\n")
+        f.close()
 
 
 def test_get_dataset_func():
     from preprocess import get_dataset
-    dataset,_,_ = get_dataset(batch_size=32, shuffle=False, num_workers=0)
+    dataset, _, _ = get_dataset(batch_size=32, shuffle=False, num_workers=0)
+    item_10_correct_less_20 = load_dict('item_10_less_20.pkl')
+    item_15_correct_less_20 = load_dict('item_15_less_20.pkl')
+    item_4_correct_less_20 = load_dict('item_4_less_20.pkl')
+    item_1_correct_less_20 = load_dict('item_1_less_20.pkl')
 
-
+    global marks
     item_10_correct = load_dict('item_10.pkl')
     item_4_correct = load_dict('item_4.pkl')
     item_15_correct = load_dict('item_15.pkl')
     item_1_correct = load_dict('item_1.pkl')
+    try:
+        assert (dataset.dataset.__getitem__(10)[0] == item_10_correct[0]).all() or (dataset.dataset.__getitem__(10)[0] == item_10_correct_less_20[0]).all()
 
-    assert (dataset.dataset.__getitem__(10)[0] == item_10_correct[0]).all()
-    assert (dataset.dataset.__getitem__(4)[0] == item_4_correct[0]).all()
-    assert (dataset.dataset.__getitem__(15)[0] == item_15_correct[0]).all()
-    assert (dataset.dataset.__getitem__(1)[0] == item_1_correct[0]).all()
+        assert (dataset.dataset.__getitem__(4)[0] == item_4_correct[0]).all() or (dataset.dataset.__getitem__(4)[0] == item_4_correct_less_20[0]).all()
 
-    assert (dataset.dataset.__getitem__(10)[1] == item_10_correct[1]).all()
-    assert (dataset.dataset.__getitem__(4)[1] == item_4_correct[1]).all()
-    assert (dataset.dataset.__getitem__(15)[1] == item_15_correct[1]).all()
-    assert (dataset.dataset.__getitem__(1)[1] == item_1_correct[1]).all()
-    
+        assert (dataset.dataset.__getitem__(15)[0] == item_15_correct[0]).all() or (dataset.dataset.__getitem__(15)[0] == item_15_correct_less_20[0]).all()
 
-if __name__ == "__main__":
-    test_get_vocab()
-    # test_index_token()
-    # test_token_index()
-    # test_get_dataset_func()
-    # from preprocess import get_dataset
-    # a,b,c = get_dataset(batch_size = 16,shuffle=False, num_workers=0)
-    # print(a.dataset.__getitem__(12)[0])
-    # print(dataloader.items())
-    # print(dir(dataloader))
+        assert (dataset.dataset.__getitem__(1)[0] == item_1_correct[0]).all() or (dataset.dataset.__getitem__(1)[0] == item_1_correct[0]).all()
 
+
+        assert (dataset.dataset.__getitem__(10)[1] == item_10_correct[1]).all() or (dataset.dataset.__getitem__(10)[1] == item_10_correct[1]).all()
+
+
+        assert (dataset.dataset.__getitem__(4)[1] == item_4_correct[1]).all() or (dataset.dataset.__getitem__(4)[1] == item_4_correct_less_20[1]).all()
+
+        assert (dataset.dataset.__getitem__(15)[1] == item_15_correct[1]).all() or (dataset.dataset.__getitem__(15)[1] == item_15_correct_less_20[1]).all()
+
+        assert (dataset.dataset.__getitem__(1)[1] == item_1_correct[0]).all() or (dataset.dataset.__getitem__(1)[1] == item_1_correct[1]).all()
+        f = open("marking.txt", "a")
+        f.write("1.75 marks awarded for get dataset function\n")
+        f.close()
+        marks += 1.75
+    except Exception as ex:
+        print("Error in get dataset function with error {} 0 marks awarded".format(ex))
+        f = open("marking.txt", "a")
+        f.write("0 marks awarded for get dataset function because {} \n".format(ex))
+        f.close()
+
+
+# if __name__ == "__main__":
+#     test_get_dataset_func()
+open('marking.txt', 'w').close()
+marks = 0
+test_get_vocab()
+test_index_token()
+test_token_index()
+test_get_dataset_func()
+test_preprocess()
+f = open("marking.txt", "a")
+f.write("Total Marks {}".format(marks))
+f.close()
+# raise ex
+
+# from preprocess import get_dataset
+# a,b,c = get_dataset(batch_size = 16,shuffle=False, num_workers=0)
+# print(a.dataset.__getitem__(12)[0])
+# print(dataloader.items())
+# print(dir(dataloader))

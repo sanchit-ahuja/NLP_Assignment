@@ -102,10 +102,10 @@ def train(input_tensor, target_tensor, mask_input, mask_target, encoder, decoder
             # the new input sequence as a continuation of the previous sequence
 
             
-            target_tensor_step = target_tensor[:, step_idx][target_tensor[:, step_idx] != 0]
+            target_tensor_step = target_tensor[:, step_idx]
             
             
-            
+            target_tensor_step=target_tensor_step[target_tensor[:, step_idx] != 0] 
             
             
             target_length = target_tensor_step.size(0)
